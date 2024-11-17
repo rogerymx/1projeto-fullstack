@@ -1,25 +1,37 @@
 import React, { createContext, useReducer } from "react";
 
+export const UserContext = createContext();
+
 const initialState = {
+  allUsers: [],
   users: [],
-  message: "",
 };
 
-function reducer(state, action) {
+const userReducer = (state, action) => {
   switch (action.type) {
     case "SET_USERS":
-      return { ...state, users: action.payload };
+      return {
+        ...state,
+        allUsers: action.payload,
+        users: action.payload,
+      };
     case "FILTER_USERS":
-      return { ...state, users: action.payload };
+      return {
+        ...state,
+        users: action.payload,
+      };
+    case "RESET_USERS":
+      return {
+        ...state,
+        users: state.allUsers,
+      };
     default:
       return state;
   }
-}
+};
 
-const UserContext = createContext(initialState);
-
-const UserProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+export const UserProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(userReducer, initialState);
 
   return (
     <UserContext.Provider value={{ state, dispatch }}>
@@ -27,5 +39,3 @@ const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
-
-export { UserContext, UserProvider };

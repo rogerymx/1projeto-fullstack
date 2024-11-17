@@ -1,16 +1,14 @@
 import React from "react";
 import { UserProvider } from "./context/UserContext";
 import UserSearch from "./components/UserSearch";
-import UsersList from "./components/UsersList"; // Certifique-se de que o caminho está correto
-import GlobalStyle from "./styles/GlobalStyles";
+import UserList from "./components/UserList";
 
 const App = () => {
   return (
     <UserProvider>
-      <GlobalStyle />
-      <div className="container">
+      <div>
         <UserSearch />
-        <UsersList />
+        <UserList />
       </div>
     </UserProvider>
   );

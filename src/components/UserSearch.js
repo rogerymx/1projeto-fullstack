@@ -2,9 +2,44 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import styled from "styled-components";
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+`;
+
+const SearchInput = styled.input`
+  padding: 10px;
+  border: 2px solid #3f51b5;
+  border-radius: 8px;
+  width: 300px;
+  margin-bottom: 10px;
+  font-size: 16px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const Button = styled.button`
+  padding: 10px 20px;
+  border: none;
+  background-color: #3f51b5;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #303f9f;
+  }
+`;
+
 const Message = styled.p`
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 16px;
   color: #333;
   margin-top: 10px;
 `;
@@ -15,34 +50,33 @@ const UserSearch = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchUsers = () => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", "https://dummyjson.com/users", true);
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          const response = JSON.parse(xhr.responseText);
-          dispatch({ type: "SET_USERS", payload: response.users });
-          setMessage("Usuários carregados da API conectados com sucesso.");
-        } else {
-          setMessage("Erro ao conectar a API.");
-        }
-      };
-      xhr.onerror = () => setMessage("Erro de conexão.");
-      xhr.send();
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("https://dummyjson.com/users");
+        const data = await response.json();
+        dispatch({ type: "SET_USERS", payload: data.users });
+        setMessage("Usuários carregados.");
+      } catch (error) {
+        setMessage("Erro ao carregar usuários.");
+      }
     };
     fetchUsers();
   }, [dispatch]);
 
   const handleSearch = () => {
     if (!input.trim()) {
-      setMessage("Digite algo para buscar.");
+      setMessage("Por favor, digite algo para buscar.");
       return;
     }
-    const filteredUsers = state.users.filter((user) => {
-      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-      return fullName.includes(input.toLowerCase());
-    });
+
+    const filteredUsers = state.allUsers.filter((user) =>
+      `${user.firstName} ${user.lastName}`
+        .toLowerCase()
+        .startsWith(input.toLowerCase())
+    );
+
     dispatch({ type: "FILTER_USERS", payload: filteredUsers });
+
     setMessage(
       filteredUsers.length
         ? "Usuário(s) encontrado(s)."
@@ -50,17 +84,26 @@ const UserSearch = () => {
     );
   };
 
+  const handleReset = () => {
+    dispatch({ type: "RESET_USERS" });
+    setMessage("Exibindo todos os usuários.");
+    setInput("");
+  };
+
   return (
-    <div>
-      <input
+    <Container>
+      <SearchInput
         type="text"
         placeholder="Digite o nome para buscar"
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <button onClick={handleSearch}>Buscar usuários</button>
+      <ButtonContainer>
+        <Button onClick={handleSearch}>Buscar usuários</Button>
+        <Button onClick={handleReset}>Atualizar</Button>
+      </ButtonContainer>
       {message && <Message>{message}</Message>}
-    </div>
+    </Container>
   );
 };
 
