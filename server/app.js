@@ -4,6 +4,7 @@ const port = 3002;
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const rotaUsuarios = require("./routes/usuarios");
+const rotaPessoas = require("./routes/pessoas");
 
 //config
     //mongoose
@@ -23,7 +24,7 @@ app.get("/", (req,res) => {
 })
 
 app.use("/usuarios", rotaUsuarios);
-
+app.use("/pessoas", rotaPessoas);
 
 //server
 app.listen(port, () => {
