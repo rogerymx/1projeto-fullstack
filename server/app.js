@@ -3,6 +3,7 @@ const app = express();
 const port = 3002;
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const rotaUsuarios = require("./routes/usuarios");
 
 //config
     //mongoose
@@ -20,6 +21,8 @@ const mongoose = require("mongoose");
 app.get("/", (req,res) => {
     res.send("Ola mundo");
 })
+
+app.use("/usuarios", rotaUsuarios);
 
 
 //server
